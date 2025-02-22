@@ -1,2 +1,2 @@
 # nsmbwTAStudio
-Home of a new set of NSMBW TAS Tools, based off of CelesteTAS Studio: https://github.com/EverestAPI/CelesteTAS-EverestInterop
+A new way to TAS New Super Mario Bros Wii, based off of Celeste TAStudio: https://github.com/EverestAPI/CelesteTAS-EverestInterop
