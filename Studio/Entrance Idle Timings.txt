@@ -1,0 +1,39 @@
+--This file shows how many forced idle frames there are before you can do inputs at the start of a new area. Spinputs can be placed a few frames sooner, if needed.
+--This is a work in progress! Not every entrance type is documented yet, but I'll be sure to add each one I test.  -MGR
+
+Level/Area Start
+  Normal Iris: 31
+  Bowser Iris: 61
+  Vine Entrance:
+  Jumping Entrance:
+  Level Start Ghost House Door: 113
+  Ghost House Door: 143
+  D-pad Door:
+  Tower Boss
+    Lary:
+    Roy:
+    Lemmy:
+    Wendy:
+    Iggy: 259
+    Morton:
+    Ludwig: 264
+    Kamek:
+  Airship Boss:
+    4-Airship:
+    6-Airship:
+    8-Airship:
+
+  Pipe Exit
+    Right: 105
+    Left:
+    Up: 116
+    Down
+      Small: 92
+      Big:
+      Ice:
+      Fire:
+      Prop: 121
+      Penguin: 106
+      Mini:
+      Yoshi
+        Prop: 118
