@@ -27,7 +27,8 @@ A new way to TAS New Super Mario Bros Wii, based off of Celeste TAStudio: https:
 
 ## Using TAS Studio!
 
-`NSMBW Studio.exe` is in the `Studio` folder. Open it; you can either use the blank file that it creates or open an existing file.\
+`NSMBW Studio.exe` is in the `Studio` folder. Open it; you can either use the blank file that it creates or open an existing file.
+
 Open Dolphin and start New Super Mario Bros Wii. Select `Tools -> Execute Script`. From this window, you can launch any script in your `Sys\Scripts` folder. Launch `Data.lua` to see a bunch of useful information about the game.
 
 When you want to 'hit play' your TAS, Launch the script called `TAStudio.lua`. It will start replaying inputs as soon as the game is not loading.
