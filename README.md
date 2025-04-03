@@ -28,7 +28,7 @@ A new way to TAS New Super Mario Bros Wii, based off of Celeste TAStudio: https:
 ## Using TAS Studio!
 
 `NSMBW Studio.exe` is in the `Studio` folder. Open it; you can either use the blank file that it creates or open an existing file.\
-Open Dolphin and start New Super Mario Bros Wii. Select `Tools` -> `Execute Script`. From this window, you can launch any script in your `Sys\Scripts` folder. Launch `Data.lua` to see a bunch of useful information about the game.
+Open Dolphin and start New Super Mario Bros Wii. Select `Tools -> Execute Script`. From this window, you can launch any script in your `Sys\Scripts` folder. Launch `Data.lua` to see a bunch of useful information about the game.
 
 When you want to 'hit play' your TAS, Launch the script called `TAStudio.lua`. It will start replaying inputs as soon as the game is not loading.
 
@@ -58,14 +58,14 @@ e.g. `123,R,J` (For `123` frames, hold `Right` and `Jump`)
 ### Commands
 Command|Description|Syntax|Legal in fullgame?
 ---|---|---|---
-Tilt|Set the wiimote tilt (0-1023)|Tilt, value|Yes
-Hold|Hold the specified buttons. To release, use without arguments|Hold, inputs|Yes
-Read|Read inputs from another file. Root is the current file's directory|Read, fileName|Yes
-Insert Load|Stop replaying inputs until the next load ends|Insert Load, loadID|Yes
-Write|Edit an in-game memory value|Write, value_type, address, value[, lock]|No
-Unlock|Clear the locked write list|Unlock|No
-Repeat<br>EndRepeat|Repeats the enclosed lines for he specified number of times|Repeat, #_of_repetitions<br>[input lines]<br>EndRepeat|Yes
-Enforce Legal|Prevents the use of illegal commands (for fullgame TASes)|Enforce Legal|Yes
-Save LoadDoc<br>Open LoadDoc|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, name]<br>Open LoadDoc[, name]|Yes
-Delete|Delete the object at the specified memory address|Delete, address|No
+`Tilt`|Set the wiimote tilt (0-1023)|Tilt, value|Yes
+`Hold`|Hold the specified buttons. To release, use without arguments|Hold, inputs|Yes
+`Read`|Read inputs from another file. Root is the current file's directory|Read, fileName|Yes
+`Insert Load`|Stop replaying inputs until the next load ends|Insert Load, loadID|Yes
+`Write`|Edit an in-game memory value|Write, value_type, address, value[, lock]|No
+`Unlock`|Clear the locked write list|Unlock|No
+`Repeat`<br>`EndRepeat`|Repeats the enclosed lines for he specified number of times|Repeat, #_of_repetitions<br>[input lines]<br>EndRepeat|Yes
+`Enforce Legal`|Prevents the use of illegal commands (for fullgame TASes)|Enforce Legal|Yes
+`Save LoadDoc`<br>`Open LoadDoc`|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, name]<br>Open LoadDoc[, name]|Yes
+`Delete`|Delete the object at the specified memory address|Delete, address|No
 <!--Macro<br>EndMacro|Name a series of input lines<br>that can be called later|Macro, name<br>[input lines]<br>EndMacro<br><br>name, 5|Yes -->
