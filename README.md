@@ -70,3 +70,8 @@ Command|Description|Syntax|Legal in fullgame?
 `Save LoadDoc`<br>`Open LoadDoc`|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, name]<br>Open LoadDoc[, name]|Yes
 `Delete`|Delete the object at the specified memory address|Delete, address|No
 <!--Macro<br>EndMacro|Name a series of input lines<br>that can be called later|Macro, name<br>[input lines]<br>EndMacro<br><br>name, 5|Yes -->
+
+## Contact: 
+@mgr_tas on Discord
+
+Through my Discord server: https://discord.gg/JxXxKAPKwT
