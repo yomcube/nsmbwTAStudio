@@ -1,9 +1,10 @@
 # NSMBW TAS Studio
-A new way to TAS New Super Mario Bros Wii, based off of Celeste TAStudio: https://github.com/EverestAPI/CelesteTAS-EverestInterop
+A new way to TAS New Super Mario Bros Wii, based off of Celeste TAStudio: https://github.com/EverestAPI/CelesteTAS-EverestInterop\
+Source code for `NSMBW Studio.exe` will be included in a release every time it it updated. The main repository is just for the TAS Studio setup.
 
 ## Setup
 1. Download Dolphin Lua Core v4.6, and put it into a folder of your liking: https://github.com/MikeXander/Dolphin-Lua-Core/releases/tag/v4.6
-2. Download this repository and paste it into your Dolphin directory (the same folder as `Dolphin.exe`). You may remove the Studio Source zip file.
+2. Download this repository and paste it into your Dolphin directory (the same folder as `Dolphin.exe`).
 3. Open Dolphin and set these settings:
 - Config
   - General
