@@ -1,7 +1,9 @@
 local text = ''
 local prevFrameText = ''
 local lastFrame = 0
+local isNowLoading = true
 local core = require 'NSMBWii_Core'
+local objList = core.object.list()
 if io.open("sharedSettings.txt", "r") == nil then
   file = io.open("sharedSettings.txt", "w+")
   file:close()
@@ -22,11 +24,23 @@ local function isPressed(button, inputs)  --copied from the input import/export 
   return button & inputs == button
 end
 
+function getLoadInfo()
+  if objList.ObjectNum == 1 then  --cannot be predicted; abort
+    return isNowLoading
+  end
+  if objList.loadCheckObjs < 2 then  --is loading
+    return true
+  else  --is not loading
+    return false
+  end
+end
+
 function onScriptUpdate()
   local p1   = core.players.P1()
   local ps   = p1.Misc[1]
   local rng  = ReadValue32(core.rng.addr)
-  local objList = core.object.list()
+  objList = core.object.list()
+  isNowLoading = getLoadInfo()
 
   --[[if GetFrameCount() ~= lastFrame then  --uncomment this chunk if you want the lua script to display stuff a frame late; shows what the values are on the frame currently displayed on screen
     lastFrame = GetFrameCount()
@@ -47,7 +61,7 @@ function onScriptUpdate()
   if core.stats.misc().switch_timer ~= 0 then
     text = text .. string.format('\nSwitch Timer : %.0f', core.stats.misc().switch_timer)
   end
-  text = string.format('%s\nLoad Check Objects: %s', text, core.object.list().loadCheckObjs)
+  text = string.format('%s\nLoading: %s', text, isNowLoading)
 
 --Input-State Change
 --Useful for level banner dismissal - mash 2/A and this will show the frame that the banner got dismissed. Then go back and press 2/A 3f before the number shown by this (also dolphin's turbo is bad so use a script to mash (Alternate.lua) or just experiment with pressing 2/A on a few different frames to see which one is optimal). Automatically hidden if you're in-level.
@@ -138,9 +152,9 @@ end
     text = string.format('%s\nPipe Timer  : %.0f', text, p1.Misc[4])
   end
 
-  --text = text .. '\n\n' .. core.object.list().itemSearchList  --select an object to watch at the top of NSMBW_Core.lua. Displays object address, position, and speed by default; watch data can be cusomized in NSMBW_Core.lua.
-  text = text .. '\n\n' .. core.object.list().compactObjList
-  --text = text .. '\n\n' .. core.object.list().fullObjList  --uncomment this line and comment the above line to see the full object list, with object addresses.
+  --text = text .. '\n\n' .. objList.itemSearchList  --select an object to watch at the top of NSMBW_Core.lua. Displays object address, position, and speed by default; watch data can be cusomized in NSMBW_Core.lua.
+  --text = text .. '\n\n' .. objList.compactObjList
+  --text = text .. '\n\n' .. objList.fullObjList  --uncomment this line and comment the above line to see the full object list, with object addresses.
 
   SetScreenText(text)
 end

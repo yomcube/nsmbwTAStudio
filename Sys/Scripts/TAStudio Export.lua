@@ -9,7 +9,7 @@ local exportType = 1  -- 1 = write to single file; 2 = fullgame export (writes t
 local isInMainFile = true
 
 local lastInstance = instance
-local notLoading = false  --set this to true if you want to start exporting when you start the script instead of when the next load ends
+local isNowLoading = true
 local messageNum = 0
 local instanceLoadDoc = '\n'
 local round = 0
@@ -63,6 +63,17 @@ end
 
 function isPressed(button, inputs)
   return button & inputs == button
+end
+
+function getLoadInfo()
+  if core.object.list().ObjectNum == 1 then  --cannot be predicted; abort
+    return isNowLoading
+  end
+  if core.object.list().loadCheckObjs < 2 then  --is loading
+    return true
+  else  --is not loading
+    return false
+  end
 end
 
 function convertInputsToLine(buttonData)
@@ -124,7 +135,8 @@ function onScriptUpdate()  --called every input call (at least 3 times per frame
     lastFrame = currFrame
     messageNum = 0
     data = ReadValue16(dataaddr)  --get controller input. For some reason we must do this on the first input call
-  elseif inputCall == 2 and notLoading then  --Do most logic now because some memory values don't update before the first input call
+  elseif inputCall == 2 and isNowLoading == false then  --Do most logic now because some memory values don't update before the first input call
+    isNowLoading = getLoadInfo()
     messageSend('Exporting Inputs...', 0x00FF00)
     --lineFrameCount = lineFrameCount + 1
     if tilt ~= currTilt then
@@ -143,11 +155,9 @@ function onScriptUpdate()  --called every input call (at least 3 times per frame
     end
     
     tilt, _, _ = GetAccel(4)  --get tilt data. Record now so it is updated and sends the line next frame.
-    --messageSend(core.object.list().ObjectNum, 0x00FFFF)
     instance = ReadValueString(0x80D20F04, 99)
-    if core.object.list().loadCheckObjs < 2 and core.object.list().ObjectNum > 1 then  --new load encountered
+    if isNowLoading then  --new load encountered
       messageSend('New load detected! Waiting for it to end...', 0x00FF00)
-      notLoading = false
       local instanceLoadNum = 0
       if string.find(instanceLoadDoc, string.format('"%s"', instance), 1, true) == nil then  --new instance
         instanceLoadDoc = string.format('%s"%s",0\n', instanceLoadDoc, instance)
@@ -167,8 +177,8 @@ function onScriptUpdate()  --called every input call (at least 3 times per frame
     end
     
     displayFile()
-  elseif inputCall == 2 and notLoading == false then  --don't process input data until a load ends
-    --messageSend('Setup Incomplete.', 0xD2691E)
+  elseif inputCall == 2 and isNowLoading then  --don't process input data until a load ends
+    isNowLoading = getLoadInfo()
     instance = ReadValueString(0x80D20F04, 99)
     if lastInstance ~= instance and exportType == 2 then
       lastInstance = instance
@@ -224,9 +234,8 @@ function onScriptUpdate()  --called every input call (at least 3 times per frame
       end
     end
     
-    if core.object.list().loadCheckObjs >= 2 then
+    if isNowLoading == false then
       messageSend('Now Exporting Inputs.', 0x00FF00)
-      notLoading = true
       fileLineCount = 0
       scriptFirstFrame = GetFrameCount()+2
       thisLineStartF = scriptFirstFrame

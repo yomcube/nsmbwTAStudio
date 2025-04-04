@@ -169,7 +169,7 @@ function object.list()
     if objName[ObjectNum] == 'YES_NO_WINDOW' or objName[ObjectNum] == 'PLAYER' or objName[ObjectNum] == 'WM_MAP' or objName[ObjectNum] == 'WORLD_9_DEMO' then
       loadCheckObjs = loadCheckObjs + 1
     --I'm sorry
-    elseif (objName[ObjectNum] == 'SELECT_CURSOR' and instance == 'sequenceBGTexture') or objName[ObjectNum] == 'BOOT' or (objName[ObjectNum] == 'CRSIN' and instance ~= '' and instance ~= '01-40' and instance ~= '01-42' and instance ~= 'MB') then
+    elseif (objName[ObjectNum] == 'SELECT_CURSOR' and instance == 'sequenceBGTexture') or objName[ObjectNum] == 'BOOT' or (string.find(objName[ObjectNum], 'CRSIN') ~= nil and instance ~= '' and instance ~= '01-40' and instance ~= '01-42' and instance ~= 'MB') then
       loadCheckObjs = loadCheckObjs + 2
     end
     if ReadValue8(objAddr[ObjectNum] + 0xE) == 2 then

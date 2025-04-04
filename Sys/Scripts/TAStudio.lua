@@ -7,13 +7,14 @@ local twirlTimer = 0
 
 local lineNumber = 0
 local pauseLineAdvance = 0
+local isInMainFile = true
 local currLineProgress = 0
 local currLine = {0, 0, ''}
 local exitLoop = false
 local returnData = {0, 0, ''}
 
 local initComplete = false
-local prevLoadInfo = {0, 0}
+local prevLoadInfo = {true, true}
 local root = ''
 
 local loopNum = 0
@@ -81,7 +82,7 @@ function onScriptUpdate()  --called every input call (3-4 times per frame)
     
     --RenderText(string.format('Load Doc: %s', loadDoc), 500, 704, 0xD2691E, 11)
   elseif round == 1 then
-    prevLoadInfo = {core.object.list().loadCheckObjs, prevLoadInfo[1]}
+    prevLoadInfo = {getLoadInfo(), prevLoadInfo[1]}
     if initComplete == false then  --manage IndexMode if init is not complete
       setIndex()
     end
@@ -125,6 +126,7 @@ function findLineFromIndex()
     endLinePos = 1
     totalFramesAtIndex = 0
     currLineProgress = 0
+    isInMainFile = true
     macroDoc = ''
     tilt = 512
     heldButtons = ''
@@ -144,7 +146,7 @@ function findLineFromIndex()
 
   end
   --debug display file
-  --RenderText('File: \n' .. rawFile, 800, 29, 0xD2691E, 11)
+  --RenderText('File: \n' .. string.sub(rawFile, startLinePos-150, startLinePos+1000), 800, 29, 0xD2691E, 11)
   --messageSend(string.format('Index: %.0f', index), 0xFF00FF) 
   
   while index > totalFramesAtIndex do  --searches through the input file until the current line is reached
@@ -213,7 +215,7 @@ function processGlobalCommand()
     return
   elseif arg1 == 'Write' and allowCheats then
     local _, _, valueType, address, valueToWrite, lock = string.find(arg2 .. ',','(.-),%s*(.-),%s*(.-),%s*(%d?)')
-    if address == nil then  --prevent the script from crashing if the line is formatted imcorrectly
+    if address == nil then  --prevent the script from crashing if the line is formatted incorrectly
       messageSend(string.format('Bad Write Line "%s"', rawLine), 0xFF0000)
     elseif index == totalFramesAtIndex+1 or lock == '1' then
       local writeAddr = convertStringToAddress(address)
@@ -231,6 +233,10 @@ function processGlobalCommand()
     doReadManagement()
     return
   elseif arg1 == 'End Read' then  --record endReadFrame so that we don't have to reindex the file after this
+    pauseLineAdvance = 0
+    isInMainFile = true
+    tilt = 512
+    heldButtons = ''
     local readCommandFileName = arg2
     local loadDocumentationStartPos, loadFileNameEndPos = string.find(loadDoc, string.format('%s,', readCommandFileName), 1, true)
     loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), totalFramesAtIndex+1, string.sub(loadDoc, loadFileNameEndPos+18, -1))
@@ -285,13 +291,13 @@ function processGlobalCommand()
       loopNum = arg5-arg4+1
       totalLoopNum = arg5
       endLinePos = arg2
-      lineNumber = arg3
+      if isInMainFile then lineNumber = arg3 end
     else
       loopNum = 0
       totalLoopNum = 0
     end
     return
-  elseif arg1 == 'set' then
+  elseif arg1 == 'set' and isInMainFile then
     local _, _, var, val = string.find(arg2, '(%w+),(%w+)')
     if var == 'lineNumber' then
       lineNumber = tonumber(val)
@@ -310,7 +316,7 @@ function processGlobalCommand()
       messageSend(string.format('Macro declaration failed! A macro already has this name.\n%s', macro), 0xFF0000)
     end
     local _, subs = string.gsub(macro, '\n', '\n')
-    lineNumber = lineNumber + subs - 1
+    if isInMainFile then lineNumber = lineNumber + subs - 1 end
     endLinePos = endMacroPos  --move the reading position to after the macro
     return
   elseif string.find(macroDoc, arg1) ~= nil then  --check if this line is a known macro callback
@@ -373,6 +379,17 @@ function convertLineToInputs(line)
   end
 end
 
+function getLoadInfo()
+  if core.object.list().ObjectNum == 1 then  --cannot be predicted; abort
+    return prevLoadInfo[1]
+  end
+  if core.object.list().loadCheckObjs < 2 then  --is loading
+    return true
+  else  --is not loading
+    return false
+  end
+end
+
 function writeValue(valueType, address, valueToWrite)
   if valueType == '8' then
     WriteValue8(address, tonumber(valueToWrite))
@@ -412,12 +429,13 @@ function messageSend(messageText, color)
 end
 
 function setIndex()
-  if prevLoadInfo[1] >= 2 and prevLoadInfo[2] < 2 then
+  if prevLoadInfo[1] == false and prevLoadInfo[2] == true then
     index = 1
     offset = GetFrameCount()
     messageSend(string.format('Offset updated automatically to %.0f', offset), 0xD2691E)
     initComplete = true
     currLine = findLineFromIndex()
+    --prevLoadInfo[2] = false
   else
     messageSend('Waiting for load to end...', 0xD2691E)
   end
@@ -453,22 +471,28 @@ function doLoadManagement()
         loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), 0, string.sub(loadDoc, loadIDEndPos+18, -1))
       end
       
-      if prevLoadInfo[1] >= 2 and prevLoadInfo[2] < 2 then  --load end detected
-        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), index-1, string.sub(loadDoc, loadIDEndPos+18, -1))
-      else
-        messageSend('Waiting for load to end...', 0xD2691E)
+      if index == totalFramesAtIndex + 1 then  --make the script think it wasn't loading on the frame before this command to prevent ds issues in some situations
+        prevLoadInfo[2] = false
       end
       
-      exitLoop = true
-      returnData = {0, totalFramesAtIndex, ''}
+      if prevLoadInfo[1] == false and prevLoadInfo[2] == true then  --load end detected
+        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), index-1, string.sub(loadDoc, loadIDEndPos+18, -1))
+        totalFramesAtIndex = totalFramesAtIndex + index - startLoadFrame
+      else
+        messageSend('Waiting for load to end...', 0xD2691E)
+        exitLoop = true
+        returnData = {0, totalFramesAtIndex, ''}
+      end
     else
       if startLoadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed and TAS is after the load. Prone to desyncs if load length changes after making an earlier edit and the load is not replayed to reindex its length, so be careful!
         loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), 0, string.sub(loadDoc, loadIDEndPos+18, -1))
       end
       --insert a blank line of length load
       rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endLoadFrame-startLoadFrame+1,string.sub(rawFile, endLinePos, -1))
-      lineNumber = lineNumber - 2
-      pauseLineAdvance = 0
+      if isInMainFile then
+        lineNumber = lineNumber - 2
+        pauseLineAdvance = 0
+      end
     end
   end
 end
@@ -480,13 +504,17 @@ function doReadManagement()
   if loadDocumentationStartPos == nil then  --if Read file has not been documented yet
     --insert the Read file and a line 'End Read, [file ID]'
     if io.open(readCommandFileName, 'r') ~= nil then  --make sure the file exists
+      pauseLineAdvance = 1
+      isInMainFile = false
       loadDoc = loadDoc .. string.format('\n%s, %7.0f, %7.0f', readCommandFileName, startReadFrame, 0)
       readCommandFile = io.open(readCommandFileName, 'r')
       
       local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), '%w LoadDoc', '#')  --remove problematic commands. Comment any trailing arguments
       textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#')
-      local valuesToKeep = string.format('\nHold, %s\nTilt, %.0f\n', heldButtons, tilt)  --maintain this file's settings when read ends
-      rawFile = string.format('%s%s\nEnd Read, %s%s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,readCommandFileName,valuesToKeep,string.sub(rawFile, endLinePos, -1))
+      
+      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
+      --local valuesToKeep = string.format('\nHold, %s\nTilt, %.0f\n', heldButtons, tilt)  --maintain this file's settings when read ends
+      --rawFile = string.format('%s%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,valuesToKeep,readCommandFileName,string.sub(rawFile, endLinePos, -1))
       
       heldButtons = ''  --reset some values to avoid desyncs
       tilt = 512
@@ -497,13 +525,15 @@ function doReadManagement()
       messageSend(string.format('File "%s" does not exist!', readCommandFileName), 0xFF0000)
     end
   else  --if file is already documented in loadDoc
-    messageSend('File is already Documented!', 0x00FF00)
+    --messageSend('File is already Documented!', 0x00FF00)
     local recordedStartFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+2, loadFileNameEndPos+8))
     local addToLoadDoc = string.format('%s, %7.0f', readCommandFileName, startReadFrame)
     loadDoc = string.format('%s%s%s',string.sub(loadDoc, 1, loadDocumentationStartPos-1), addToLoadDoc, string.sub(loadDoc, loadDocumentationStartPos+#addToLoadDoc, -1))
     
     local endReadFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+11, loadFileNameEndPos+17))
     if endReadFrame == 0 or index < endReadFrame then  --if End Read has not previously been called or input index is during the read
+      pauseLineAdvance = 1
+      isInMainFile = false
       if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
         loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
       end
@@ -512,8 +542,10 @@ function doReadManagement()
       
       local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), 'Open LoadDoc', '#Open LoadDoc')  --remove problematic commands
       textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#IndexMode')
-      local valuesToKeep = string.format('\nHold, %s\nTilt, %.0f\n', heldButtons, tilt)  --maintain this file's settings when read ends
-      rawFile = string.format('%s%s\nEnd Read, %s%s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,readCommandFileName,valuesToKeep,string.sub(rawFile, endLinePos, -1))
+      
+      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
+      --local valuesToKeep = string.format('\nHold, %s\nTilt, %.0f\n', heldButtons, tilt)  --maintain this file's settings when read ends
+      --rawFile = string.format('%s%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,valuesToKeep,readCommandFileName,string.sub(rawFile, endLinePos, -1))
 
       readCommandFile:close()
       messageSend(string.format('Read file: %s', readCommandFileName), 0xD2691E)
@@ -523,7 +555,7 @@ function doReadManagement()
       end
       --insert a blank line of length read
       rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endReadFrame-startReadFrame,string.sub(rawFile, endLinePos, -1))
-      lineNumber = lineNumber - 2
+      if isInMainFile then lineNumber = lineNumber - 2 end
     end
   end
 end
