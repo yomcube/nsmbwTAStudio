@@ -1,11 +1,11 @@
---This file shows how many forced idle frames there are before you can do inputs at the start of a new area. Spinputs can be placed a few frames sooner, if needed.
+--This file shows how many forced idle frames there are before you can do inputs at the start of a new area. Spinputs can be placed up to 3 frames sooner.
 --This is a work in progress! Not every entrance type is documented yet, but I'll be sure to add each one I test.  -MGR
 
 Level/Area Start
   Normal Iris: 31
   Bowser Iris: 61
-  Vine Entrance:
-  Jumping Entrance:
+  Vine Entrance: 153
+  Jumping Entrance: 110
   Level Start Ghost House Door: 113
   Ghost House Door: 143
   D-pad Door:
@@ -21,7 +21,7 @@ Level/Area Start
   Airship Boss:
     4-Airship:
     6-Airship:
-    8-Airship:
+    8-Airship: 979
 
   Pipe Exit
     Right: 105
