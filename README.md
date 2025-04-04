@@ -60,16 +60,16 @@ e.g. `123,R,J` (For `123` frames, hold `Right` and `Jump`)
 ### Commands
 Command|Description|Syntax|Legal in fullgame?
 ---|---|---|---
-`Tilt`|Set the wiimote tilt (0-1023)|Tilt, value|Yes
-`Hold`|Hold the specified buttons. To release, use without arguments|Hold, inputs|Yes
-`Read`|Read inputs from another file. Root is the current file's directory|Read, fileName|Yes
-`Insert Load`|Stop replaying inputs until the next load ends|Insert Load, loadID|Yes
-`Write`|Edit an in-game memory value|Write, value_type, address, value[, lock]|No
+`Tilt`|Set the wiimote tilt (0-1023)|Tilt, *value*|Yes
+`Hold`|Hold the specified buttons. To release, use without arguments|Hold, *inputs*|Yes
+`Read`|Read inputs from another file. Root is the current file's directory|Read, *fileName*|Yes
+`Insert Load`|Stop replaying inputs until the next load ends|Insert Load, *loadID*|Yes
+`Write`|Edit an in-game memory value|Write, *valueType*, *address*, *value*[, *lock*]|No
 `Unlock`|Clear the locked write list|Unlock|No
-`Repeat`<br>`EndRepeat`|Repeats the enclosed lines for he specified number of times|Repeat, #_of_repetitions<br>[input lines]<br>EndRepeat|Yes
+`Repeat`<br>`EndRepeat`|Repeats the enclosed lines for he specified number of times|Repeat, *#OfRepetitions*<br>*input_lines*<br>EndRepeat|Yes
 `Enforce Legal`|Prevents the use of illegal commands (for fullgame TASes)|Enforce Legal|Yes
-`Save LoadDoc`<br>`Open LoadDoc`|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, name]<br>Open LoadDoc[, name]|Yes
-`Delete`|Delete the object at the specified memory address|Delete, address|No
+`Save LoadDoc`<br>`Open LoadDoc`|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, *name*]<br>Open LoadDoc[, *name*]|Yes
+`Delete`|Delete the object at the specified memory address|Delete, *address*|No
 <!--Macro<br>EndMacro|Name a series of input lines<br>that can be called later|Macro, name<br>[input lines]<br>EndMacro<br><br>name, 5|Yes -->
 
 ## Contact: 
