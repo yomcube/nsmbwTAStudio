@@ -237,6 +237,7 @@ function processGlobalCommand()
     isInMainFile = true
     tilt = 512
     heldButtons = ''
+    macroDoc = ''
     local readCommandFileName = arg2
     local loadDocumentationStartPos, loadFileNameEndPos = string.find(loadDoc, string.format('%s,', readCommandFileName), 1, true)
     loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), totalFramesAtIndex+1, string.sub(loadDoc, loadFileNameEndPos+18, -1))
@@ -514,8 +515,13 @@ function doReadManagement()
       
       rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, endLinePos),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
       
-      heldButtons = ''  --reset some values to avoid desyncs
-      tilt = 512
+      
+      if index == startReadFrame then 
+        lineNumber = lineNumber+1
+        heldButtons = ''  --reset some values to avoid desyncs
+        tilt = 512
+        macroDoc = ''
+      end
       
       readCommandFile:close()
       messageSend(string.format('Read file: %s', readCommandFileName), 0xD2691E)
@@ -531,6 +537,11 @@ function doReadManagement()
     local endReadFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+11, loadFileNameEndPos+17))
     if endReadFrame == 0 or index < endReadFrame then  --if End Read has not previously been called or input index is during the read
       pauseLineAdvance = 1
+      if index == startReadFrame then
+        heldButtons = ''  --reset some values to avoid desyncs
+        tilt = 512
+        macroDoc = ''
+      end
       isInMainFile = false
       if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
         loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
