@@ -510,11 +510,9 @@ function doReadManagement()
       readCommandFile = io.open(readCommandFileName, 'r')
       
       local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), '%w LoadDoc', '#')  --remove problematic commands. Comment any trailing arguments
-      textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#')
+      --textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#')
       
-      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
-      --local valuesToKeep = string.format('\nHold, %s\nTilt, %.0f\n', heldButtons, tilt)  --maintain this file's settings when read ends
-      --rawFile = string.format('%s%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,valuesToKeep,readCommandFileName,string.sub(rawFile, endLinePos, -1))
+      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, endLinePos),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
       
       heldButtons = ''  --reset some values to avoid desyncs
       tilt = 512
@@ -540,12 +538,10 @@ function doReadManagement()
       --insert the Read file and a line 'End Read, [file ID]'
       readCommandFile = io.open(readCommandFileName, 'r')
       
-      local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), 'Open LoadDoc', '#Open LoadDoc')  --remove problematic commands
-      textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#IndexMode')
+      local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), '%w LoadDoc', '#')  --remove problematic commands
+      --textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#IndexMode')
       
-      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
-      --local valuesToKeep = string.format('\nHold, %s\nTilt, %.0f\n', heldButtons, tilt)  --maintain this file's settings when read ends
-      --rawFile = string.format('%s%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, startLinePos-1),textToImportToFile,valuesToKeep,readCommandFileName,string.sub(rawFile, endLinePos, -1))
+      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, endLinePos),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
 
       readCommandFile:close()
       messageSend(string.format('Read file: %s', readCommandFileName), 0xD2691E)
