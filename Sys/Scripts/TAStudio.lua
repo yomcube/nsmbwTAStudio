@@ -450,51 +450,49 @@ function doLoadManagement()
   if loadIDStartPos == nil then  --if load has not been documented yet
   --example Load Doc line: '[load ID],   10842,   12399'  --works up until input index 9,999,999 (46 hours)
     loadDoc = loadDoc .. string.format('\n%s, %7.0f, %7.0f', loadID, startLoadFrame, 0)
-    
-    exitLoop = true
-    returnData = {0, totalFramesAtIndex, ''}
-    messageSend(string.format('Loading: %s', loadID), 0xD2691E)
-  else
-    local recordedStartFrame = tonumber(string.sub(loadDoc, loadIDEndPos+2, loadIDEndPos+8))
+    --messageSend('Wrote to LoadDoc Init', 0x00FFFF)
+    loadIDStartPos, loadIDEndPos = string.find(loadDoc, string.format('%s,', loadID), 1, true)
+  end
+  
+  local recordedStartFrame = tonumber(string.sub(loadDoc, loadIDEndPos+2, loadIDEndPos+8))
+  local endLoadFrame = tonumber(string.sub(loadDoc, loadIDEndPos+11, loadIDEndPos+17))
+
+  if endLoadFrame == 0 or index <= endLoadFrame+1 then  --if load has not ended or input index is during the load; check until endLoadFrame+1 for longer-than-documented loads to reindex
     local addToLoadDoc = string.format('%s, %7.0f', loadID, startLoadFrame)
     loadDoc = string.format('%s%s%s',string.sub(loadDoc, 1, loadIDStartPos-1), addToLoadDoc, string.sub(loadDoc, loadIDStartPos+#addToLoadDoc, -1))
-    if GetFrameCount() == scriptFirstFrame+2 or messageTimer ~= 0 then
-      if messageTimer == 0 then
-        messageTimer = 160
-      else
-        messageTimer = messageTimer - 1
-      end
-     messageSend('Warning: Script was started during an "Insert Load" command! Any prior inputs will likely desync!', 0xFF0000)
+    --messageSend('Wrote to LoadDoc 0', 0x00FFFF)
+    
+    if startLoadFrame ~= recordedStartFrame then  --reset loadDoc if previous inputs changed and are currently in the load
+      loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), 0, string.sub(loadDoc, loadIDEndPos+18, -1))
+      --messageSend('Wrote to LoadDoc 1', 0x00FFFF)
     end
-    local endLoadFrame = tonumber(string.sub(loadDoc, loadIDEndPos+11, loadIDEndPos+17))
-    if endLoadFrame == 0 or index < endLoadFrame then  --if load has not ended or input index is during the load
-      if startLoadFrame ~= recordedStartFrame then  --reset loadDoc if previous inputs changed and are currently in the load
-        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), 0, string.sub(loadDoc, loadIDEndPos+18, -1))
-      end
-      
-      if index == totalFramesAtIndex + 1 then  --make the script think it wasn't loading on the frame before this command to prevent ds issues in some situations
-        prevLoadInfo[2] = false
-      end
-      
-      if prevLoadInfo[1] == false and prevLoadInfo[2] == true then  --load end detected
-        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), index-1, string.sub(loadDoc, loadIDEndPos+18, -1))
-        totalFramesAtIndex = totalFramesAtIndex + index - startLoadFrame
-      else
-        messageSend('Waiting for load to end...', 0xD2691E)
-        exitLoop = true
-        returnData = {0, totalFramesAtIndex, ''}
-      end
+    
+    if index == totalFramesAtIndex + 1 or GetFrameCount() == scriptFirstFrame+1 then  --make the script think it wasn't loading on the frame before this command to prevent ds issues in some situations
+      prevLoadInfo[2] = false
+    end
+    
+    if prevLoadInfo[1] == false and prevLoadInfo[2] == true then  --load end detected
+      loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), index-1, string.sub(loadDoc, loadIDEndPos+18, -1))
+      --messageSend('Wrote to LoadDoc 2', 0x00FFFF)
+      totalFramesAtIndex = totalFramesAtIndex + index - startLoadFrame
     else
-      if startLoadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed and TAS is after the load. Prone to desyncs if load length changes after making an earlier edit and the load is not replayed to reindex its length, so be careful!
-        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), 0, string.sub(loadDoc, loadIDEndPos+18, -1))
-      end
-      --insert a blank line of length load
-      rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endLoadFrame-startLoadFrame+1,string.sub(rawFile, endLinePos, -1))
-      if isInMainFile then
-        lineNumber = lineNumber - 2
-        pauseLineAdvance = 0
-      end
+      messageSend('Waiting for load to end...', 0xD2691E)
+      exitLoop = true
+      returnData = {0, totalFramesAtIndex, ''}
     end
+    return
+  end
+  --index > endLoadFrame+1
+  
+  if startLoadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed and TAS is after the load. Prone to desyncs if load length changes after making an earlier edit and the load is not replayed to reindex its length, so be careful!
+    loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadIDEndPos+10), 0, string.sub(loadDoc, loadIDEndPos+18, -1))
+    --messageSend('Wrote to LoadDoc 3', 0x00FFFF)
+  end
+  --insert a blank line of length load
+  rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endLoadFrame-startLoadFrame+1,string.sub(rawFile, endLinePos, -1))
+  if isInMainFile then
+    lineNumber = lineNumber - 2
+    pauseLineAdvance = 0
   end
 end
 
@@ -528,43 +526,44 @@ function doReadManagement()
     else
       messageSend(string.format('File "%s" does not exist!', readCommandFileName), 0xFF0000)
     end
-  else  --if file is already documented in loadDoc
-    --messageSend('File is already Documented!', 0x00FF00)
-    local recordedStartFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+2, loadFileNameEndPos+8))
-    local addToLoadDoc = string.format('%s, %7.0f', readCommandFileName, startReadFrame)
-    loadDoc = string.format('%s%s%s',string.sub(loadDoc, 1, loadDocumentationStartPos-1), addToLoadDoc, string.sub(loadDoc, loadDocumentationStartPos+#addToLoadDoc, -1))
-    
-    local endReadFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+11, loadFileNameEndPos+17))
-    if endReadFrame == 0 or index < endReadFrame then  --if End Read has not previously been called or input index is during the read
-      pauseLineAdvance = 1
-      if index == startReadFrame then
-        heldButtons = ''  --reset some values to avoid desyncs
-        tilt = 512
-        macroDoc = ''
-      end
-      isInMainFile = false
-      if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
-        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
-      end
-      --insert the Read file and a line 'End Read, [file ID]'
-      readCommandFile = io.open(readCommandFileName, 'r')
-      
-      local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), '%w LoadDoc', '#')  --remove problematic commands
-      --textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#IndexMode')
-      
-      rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, endLinePos),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
-
-      readCommandFile:close()
-      messageSend(string.format('Read file: %s', readCommandFileName), 0xD2691E)
-    else
-      if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
-        loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
-      end
-      --insert a blank line of length read
-      rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endReadFrame-startReadFrame,string.sub(rawFile, endLinePos, -1))
-      if isInMainFile then lineNumber = lineNumber - 2 end
-    end
+    return
   end
+  --if file is already documented in loadDoc
+  --messageSend('File is already Documented!', 0x00FF00)
+  local recordedStartFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+2, loadFileNameEndPos+8))
+  local addToLoadDoc = string.format('%s, %7.0f', readCommandFileName, startReadFrame)
+  loadDoc = string.format('%s%s%s',string.sub(loadDoc, 1, loadDocumentationStartPos-1), addToLoadDoc, string.sub(loadDoc, loadDocumentationStartPos+#addToLoadDoc, -1))
+  
+  local endReadFrame = tonumber(string.sub(loadDoc, loadFileNameEndPos+11, loadFileNameEndPos+17))
+  if endReadFrame == 0 or index < endReadFrame then  --if End Read has not previously been called or input index is during the read
+    pauseLineAdvance = 1
+    if index == startReadFrame then
+      heldButtons = ''  --reset some values to avoid desyncs
+      tilt = 512
+      macroDoc = ''
+    end
+    isInMainFile = false
+    if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
+      loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
+    end
+    --insert the Read file and a line 'End Read, [file ID]'
+    readCommandFile = io.open(readCommandFileName, 'r')
+    
+    local textToImportToFile = string.gsub(tostring(readCommandFile:read('*all')), '%w LoadDoc', '#')  --remove problematic commands
+    --textToImportToFile = string.gsub(textToImportToFile, 'IndexMode', '#IndexMode')
+    
+    rawFile = string.format('%s%s\nEnd Read, %s%s',string.sub(rawFile, 1, endLinePos),textToImportToFile,readCommandFileName,string.sub(rawFile, endLinePos, -1))
+
+    readCommandFile:close()
+    messageSend(string.format('Read file: %s', readCommandFileName), 0xD2691E)
+  else
+    if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
+      loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
+    end
+    --insert a blank line of length read
+    rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endReadFrame-startReadFrame,string.sub(rawFile, endLinePos, -1))
+    if isInMainFile then lineNumber = lineNumber - 2 end
+  end 
 end
 
 function openLoadDoc()
@@ -588,7 +587,6 @@ function openLoadDoc()
     if arg3 ~= 'SkipOffset,' then
       offset = docFile:read("*number")
       index = GetFrameCount() - offset
-      scriptFirstFrame = offset
       loadDoc = string.sub(tostring(docFile:read("*all")), 2)
     else  --if SkipOffset is called, adjust the input lines based on the current offset
       local loadDocOffset = docFile:read("*number")
