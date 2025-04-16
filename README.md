@@ -85,7 +85,7 @@ Command|Description|Syntax|Legal in fullgame?
 `Insert Load`|Stop replaying inputs until the next load ends|Insert Load, *loadID*|Yes
 `Write`|Edit an in-game memory value|Write, *valueType*, *address*, *value*[, *lock*]|No
 `Unlock`|Clear the locked write list|Unlock|No
-`Repeat`<br>`EndRepeat`|Repeats the enclosed lines for he specified number of times|Repeat, *#OfRepetitions*<br>*input_lines*<br>EndRepeat|Yes
+`Repeat`<br>`EndRepeat`|Repeats the enclosed lines for the specified number of times|Repeat, *#OfRepetitions*<br>*input_lines*<br>EndRepeat|Yes
 `Enforce Legal`|Prevents the use of illegal commands (for fullgame TASes)|Enforce Legal|Yes
 `Save LoadDoc`<br>`Open LoadDoc`|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, *name*]<br>Open LoadDoc[, *name*]|Yes
 `Delete`|Delete the object at the specified memory address|Delete, *address*|No
