@@ -16,7 +16,7 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
   - DISABLE all GameCube controllers
   - `Wiimote 1`: Emulated Wiimote
     - `Extension`: Nunchuck
-    - Note: Hotkey controller binds are not needed for TASing with Studio. But if you do map hotkeys for controller input, only use `Shake Z` for your spin input key.
+    - Note: Hotkey controller binds are not needed for TASing with Studio. But if you do map hotkeys for controller input, use only `Shake Z` for your spin input key.
 
 - Hotkeys
   - MGR's recommened hotkeys are saved as a profile called `TAS Studio`. If you decide to use your own, make sure you have hotkeys for Save/Load States, Frame Advance, and Toggle Pause.
