@@ -29,7 +29,7 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
         `Right Shift` = Uncap emulation speed
       
         `Alt`+`-` = Save state to selected slot\
-        `=` = Load state from selected slot
+        `=` = Load state from selected slot\
         `Ctrl`+`Shift`+`-` = Undo Save State\
         `Ctrl`+`Shift`+`=` = Undo Load State
       
