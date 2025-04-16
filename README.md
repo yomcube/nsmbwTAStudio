@@ -96,7 +96,7 @@ Command|Description|Syntax|Legal in fullgame?
   
   - There are a variety of different text strings that you can use instead of a memory address, so here's the list.
   - Strings prefixed with `.` should be placed after a different address (parent) to get good results (for example, `Player.PosX` or `0x8154B804.PosX`)
-    - If strings prefixed with `.` are used without the period and without a parent, then they will assume that `Player` is the parent string.\
+    - If strings prefixed with `.` are used without the period and without a parent, then they will assume that `Player` is the parent string.
 
   `IGT` = Value of (InGameTimer - 1)*4096  (maybe I'll automate the conversion someday)\
   `RNG` = The game's RNG state (0x0 - 0xFFFFFFFF)\
@@ -106,7 +106,7 @@ Command|Description|Syntax|Legal in fullgame?
   `SwitchTimer` = Remaining time on a P-Switch timer\
   `LevelDeaths` = Deaths per level (for easily activating super guide blocks; suffix with level name in format `.1-2`, `.5-Tower`)\
   `ProjectileCountA` = Number of recent fire/ice balls (set bot A and B)\
-  `ProjectileCountB`\
+  `ProjectileCountB`
   
   `Player` = The player's object address\
   `.PosX`\
@@ -119,7 +119,7 @@ Command|Description|Syntax|Legal in fullgame?
   `.Jump` = Chained Jump Counter (Player Only)\
   `.ChainJumpTimer` = Remaining time to jump while activating the next chained jump state (Player Only)\
   `.Powerup` or `.PS` = Player Powerup State (0-6 unless you want to have fun)\
-  `.PipeTimerL` or `.PipeTimerR` = Frames since landing on ground and holding L/R (Player Only)\
+  `.PipeTimerL` or `.PipeTimerR` = Frames since landing on ground and holding L/R (Player Only)
   
   `Inventory` = The game's inventory refference address\
   `.Mushrooms`\
