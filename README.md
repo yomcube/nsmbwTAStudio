@@ -104,7 +104,7 @@ Command|Description|Syntax|Legal in fullgame?
   `CoinCount` (32)\
   `Score` (32)\
   `SwitchTimer` = Remaining time on a P-Switch timer (32)\
-  `LevelDeaths` = Deaths per level (for easily activating super guide blocks; suffix with level name in format `.1-2`, `.5-Tower1`; 8)\
+  `LevelDeaths` = Deaths per level (for easily activating super guide blocks; suffix with level name in format `.1-2`, `.5-Tower`; 8)\
   `ProjectileCountA` = Number of recent fire/ice balls (set bot A and B; 8)\
   `ProjectileCountB` (8)
   
