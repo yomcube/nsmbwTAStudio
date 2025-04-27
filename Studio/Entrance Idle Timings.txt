@@ -4,8 +4,9 @@
 Level/Area Start
   Normal Iris: 31
   Bowser Iris: 61
+  Screen Wipe Down: 61
   Vine Entrance: 153
-  Jumping Entrance: 110
+  Jumping Entrance: 110; 135
   Level Start Ghost House Door: 113
   Ghost House Door: 143
   D-pad Door:
@@ -34,6 +35,6 @@ Level/Area Start
       Fire:
       Prop: 121
       Penguin: 106
-      Mini:
+      Mini: 81
       Yoshi
         Prop: 118
