@@ -9,7 +9,7 @@ Level/Area Start
   Jumping Entrance: 110; 135
   Level Start Ghost House Door: 113
   Ghost House Door: 143
-  D-pad Door:
+  D-pad Door: 143
   Tower Boss
     Lary:
     Roy:
