@@ -2,8 +2,8 @@
 A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https://github.com/EverestAPI/CelesteTAS-EverestInterop/tree/a968bc96f958d67ddce3de84175f0e2b0bad1572). Source code for `NSMBW Studio.exe` will be included in a release every time it it updated; it is mostly unchanged from Celeste TAStudio. The main repository is just for the TAS Studio setup.
 
 ## Setup
-1. Download Dolphin [Lua Core v4.6](https://github.com/MikeXander/Dolphin-Lua-Core/releases/tag/v4.6), and put it into a folder of your liking
-2. Download this repository and paste it into your Dolphin directory (the same folder as `Dolphin.exe`).
+1. Download [Dolphin Lua Core v4.6](https://github.com/MikeXander/Dolphin-Lua-Core/releases/tag/v4.6), and put it into a folder of your liking
+2. Download this repository and paste its contents into your Dolphin directory (the same folder as `Dolphin.exe`).
 3. Open Dolphin and set these settings:
 - Config
   - General
@@ -16,7 +16,7 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
   - DISABLE all GameCube controllers
   - `Wiimote 1`: Emulated Wiimote
     - `Extension`: Nunchuck
-    - Note: Hotkey controller binds are not needed for TASing with Studio. But if you do map hotkeys for controller input, use only `Shake Z` for your spin input key.
+    - Note: Hotkey controller binds are not required for TASing with Studio. If you do map hotkeys for controller input, use only `Shake Z` for your spin input key.
 
 - Hotkeys
   - MGR's recommened hotkeys are saved as a profile called `TAS Studio`. If you decide to use your own, make sure you have hotkeys for Save/Load States, Frame Advance, and Toggle Pause.
@@ -90,6 +90,27 @@ Command|Description|Syntax|Legal in fullgame?
 `Save LoadDoc`<br>`Open LoadDoc`|Save/Open the current Load Documentation to/from a file|Save LoadDoc[, *name*]<br>Open LoadDoc[, *name*]|Yes
 `Delete`|Delete the object at the specified memory address|Delete, *address*|No
 <!--Macro<br>EndMacro|Name a series of input lines<br>that can be called later|Macro, name<br>[input lines]<br>EndMacro<br><br>name, 5|Yes -->
+
+<details>
+  <summary>Additional info for Load-related commands</summary>
+
+  New Super Mario Bros Wii has inconsistent loading times. By adding an `Insert Load` command, the game will pause the input replay until the next load ends, then continue. This makes sure that the TAS will always sync even if the load length changes. However, if enemy dances or other music cycles are affected, then the TAS may still desync when improvements are made or if the TAS is played on a different version of the game than it was drafted on. There currently is no way around this, unfortunately.
+
+  Each load must be given a unique ID so that the script can document how long each load was and use that information to allow you to use savestates after the load. An example input line would be: `Insert Load, 5-2 Pipe1`
+
+  When you restart `TAStudio.lua`, the load documentation is reset, so the TAS must run through any loads to redocument them. This is usually not a big deal for individual level TASing, but when working with a fullgame file, you may want to use `Save LoadDoc` and `Open LoadDoc`. These commands will save and recall your load documentation so that you can continue working between sessions without having to replay the whole TAS. Here's an example file of how to use that:
+
+```
+#Start
+Open LoadDoc, 5-4
+ 250,R
+Insert Load, 5-4 Pipe1
+ 106
+Save LoadDoc, 5-4
+  50,R
+```
+  
+</details>
 
 <details>
   <summary>Additional info for using Write commands</summary>
