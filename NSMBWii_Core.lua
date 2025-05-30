@@ -11,7 +11,7 @@ local rng     = {}
 local stats   = {}
 local time    = {}
 local object  = {}
-local searchItem = ',,' -- fill this with objects you want to watch in format ',object1,object2,object3,'  (useful for watching position/speed of enemies/objects or seeing when they load). To use, uncomment this line near the end of Data.lua
+local searchItem = ',AC_FLOOR_HOLE_DOKAN,' -- fill this with objects you want to watch in format ',object1,object2,object3,'  (useful for watching position/speed of enemies/objects or seeing when they load). To use, uncomment this line near the end of Data.lua
 
 function core.game_id_rev()
   local id  = ReadValueString(4, 2)
@@ -30,6 +30,14 @@ local rev = core.game_id_rev().Rev
 p1 = 0x8154b804
 
 function players.P1()
+
+  local currentState = ReadValueString(GetPointerNormal(p1 + 0x1478, 4, 0), 99)
+  local previousState = ReadValueString(GetPointerNormal(p1 + 0x1494, 4, 0), 99)
+  local demoState = ReadValueString(GetPointerNormal(p1 + 0x142C, 4, 0), 99)
+  if demoState ~= 'daPlBase_c::StateID_DemoNone' then
+    currentState = demoState
+  end
+
   local inputsUS = ReadValue16(0x8039F460)
   local inputsJP = ReadValue16(0x8039F120)
   local collisionFlags = ReadValue32(p1 + 0x10D4)
@@ -51,17 +59,19 @@ function players.P1()
   local spin = ReadValue32(p1 + 0x17C4)
   local action = ReadValue32(p1 + 0xEC0)
   local jump = ReadValue8(p1 + 0x1568)
+  local someCountdown = ReadValue32(p1 + 0x14A8)
 
   local powerup = ReadValue32(p1 + 0x14E0)
   local stored_jump = ReadValue32(p1 + 0x1564)
   local lPipe = ReadValue8(p1 + 0x420)
   local rPipe = ReadValue8(p1 + 0x421)
+  local hipAttackStage = ReadValue32(p1+ 0x14A4)
 
   return {
     Pos    = {x_pos, y_pos},
     Speed  = {x_disp, x_spd, x_cap, x_accel, y_disp, y_spd, y_accel},
-    Timers = {star, twirl, slide, spin, action, jump},
-    Misc   = {powerup, stored_jump, lPipe, rPipe, inputsUS, inputsJP, collisionFlags}
+    Timers = {star, twirl, slide, spin, action, jump, someCountdown},
+    Misc   = {powerup, stored_jump, lPipe, rPipe, inputsUS, inputsJP, collisionFlags, currentState, previousState, hipAttackStage}
   }
 end
 
@@ -82,7 +92,7 @@ end
 function rng.increment(x, n)
   local a = 0x19660D
   local b = 0x3C6EF35F
-	local c = 0x100000000
+  local c = 0x100000000
 
   local i = 0
   while i < n do
@@ -109,9 +119,9 @@ function stats.misc()
     stars      = ReadValue32(stats.inv_addr_ref + 0x18),
     ps7s       = ReadValue32(stats.inv_addr_ref + 0x1C),
     switch_timer = ReadValue32(0x815E4338),
-	last_level_name = ReadValueString(0x80373AFC, 99),
-	current_world = ReadValueString(0x80429F60, 99),
-	current_instance = ReadValueString(0x80D20F04, 99)
+    last_level_name = ReadValueString(0x80373AFC, 99),
+    current_world = ReadValueString(0x80429F60, 99),
+    current_instance = ReadValueString(0x80D20F04, 99)
   }
 end
 

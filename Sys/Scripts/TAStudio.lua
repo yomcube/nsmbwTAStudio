@@ -17,6 +17,10 @@ local initComplete = false
 local prevLoadInfo = {true, true}
 local root = ''
 
+local subFrame = false
+local subFrameInputs = {'', '', ''}
+local inputCall = 1
+
 local loopNum = 0
 local totalLoopNum = 0
 local messageNum = 0
@@ -61,7 +65,9 @@ function onScriptCancel()
 end
 
 function onScriptUpdate()  --called every input call (3-4 times per frame)
+  inputCall = inputCall + 1
   if lastFrame ~= GetFrameCount() then  --executes this loop once a frame
+    inputCall = 1
     round = 1
     messageNum = 0
     writeValueList = ''
@@ -69,6 +75,7 @@ function onScriptUpdate()  --called every input call (3-4 times per frame)
     if initComplete and index > 0 then
       currLine = findLineFromIndex()  --finds the current input line and records a bunch of data for later use
     end
+    
     --currLineProgress = index - currLine[2] + currLine[1]
     lastFrame = GetFrameCount()
     
@@ -86,8 +93,8 @@ function onScriptUpdate()  --called every input call (3-4 times per frame)
     if initComplete == false then  --manage IndexMode if init is not complete
       setIndex()
     end
-    messageSend(writeValueList, 0xD2691E)
-    messageSend(lockedWriteValueList, 0xD2691E)
+    if writeValueList ~= '' then messageSend(writeValueList, 0xD2691E) end
+    if lockedWriteValueList ~= '' then messageSend(lockedWriteValueList, 0xD2691E) end
     round = 0
   end
   
@@ -105,8 +112,21 @@ function onScriptUpdate()  --called every input call (3-4 times per frame)
   if index < 1 then  --prevents the script from playing inputs before the input file starts
     currLine = {0, 0, ''}
     tilt = 512
+    subFrame = false
   end
-  convertLineToInputs(currLine[3])  --execute button inputs
+    
+  if subFrame then 
+    --messageSend(string.format('Sub-Frame line: %s, %s, %s', subFrameInputs[1], subFrameInputs[2], subFrameInputs[3]), 0x00FFFF)
+    if inputCall < 3 then
+      convertLineToInputs(subFrameInputs[inputCall])
+      messageSend(string.format('Sub Frame Input Sent: %s', subFrameInputs[inputCall]), 0x00FFFF)
+    else
+      convertLineToInputs(subFrameInputs[3])
+      messageSend(string.format('Sub Frame Input Sent: %s', subFrameInputs[3]), 0x00FFFF)
+    end
+  else
+    convertLineToInputs(currLine[3])  --execute button inputs
+  end
   if nunchuck then
     SetAccelX(tilt, 4)
   else
@@ -145,6 +165,9 @@ function findLineFromIndex()
   --else  --if file will continue being indexed from where it left off last frame
 
   end
+  subFrame = false
+  subFrameInputs = {'', '', ''}
+  
   --debug display file
   --RenderText('File: \n' .. string.sub(rawFile, startLinePos-150, startLinePos+1000), 800, 29, 0xD2691E, 11)
   --messageSend(string.format('Index: %.0f', index), 0xFF00FF) 
@@ -298,6 +321,22 @@ function processGlobalCommand()
       totalLoopNum = 0
     end
     return
+  elseif arg1 == 'SubFrame' then
+    totalFramesAtIndex = totalFramesAtIndex + 1
+    currLineProgress = 0
+    inputDuration = 1
+    lineInputs = ''
+    if index == totalFramesAtIndex then
+      subFrame = true
+      local _, _, call1, call2, call3 = string.find(arg2 .. ',,,', '(.-),(.-),(.-),')
+      if call2 == '' then
+        call2 = call1
+      end
+      if call3 == '' then
+        call3 = call2
+      end
+      subFrameInputs = {call1, call2, call3}
+    end
   elseif arg1 == 'set' and isInMainFile then
     local _, _, var, val = string.find(arg2, '(%w+),(%w+)')
     if var == 'lineNumber' then
@@ -305,6 +344,7 @@ function processGlobalCommand()
     elseif var == 'pauseLineAdvance' then
       pauseLineAdvance = tonumber(val)
     end
+    return
   elseif arg1 == 'macro' or arg1 == 'Macro' then
     local _, endMacroPos, macro = string.find(rawFile, '(.-\n[Ee]nd[Mm]acro\n)', startLinePos)
     if macro == nil then
@@ -353,10 +393,14 @@ function processCommand()
       messageSend(string.format('Deleted "%s" (0x%X)', arg2, deleteAddr), 0x00FF00)
       WriteValue8(deleteAddr+0xB, 2)
       end
-  elseif arg1 == 'InputDisplay' and allowCheats then  --bool input display (0=off, 1=on; for Hitbox Mod v6)
-    WriteValue8(0x80D29188, arg2)
-  elseif arg1 == 'HitboxMode' and allowCheats then  --change hitbox configuration (0=off, 1=basic, 2=complex; for Hitbox Mod v6)
-    WriteValue8(0x80D2918F, arg2)
+  elseif arg1 == 'InputDisplay' and allowCheats then  --bool input display (0=off, 1=on; for Hitbox Mod v7)
+    WriteValue8(0x80D2B100, arg2)
+  elseif arg1 == 'HitboxMode' and allowCheats then  --change hitbox configuration (0=off, 1=basic, 2=complex; for Hitbox Mod v7)
+    WriteValue8(0x80D2B107, arg2)
+  elseif arg1 == 'Grid' and allowCheats then  --change hitbox configuration (0=off, 1=basic, 2=complex; for Hitbox Mod v7)
+    WriteValue8(0x80D2B150, arg2)
+  elseif arg1 == 'InfoDisplay' and allowCheats then  --change hitbox configuration (0=off, 1=basic, 2=complex; for Hitbox Mod v7)
+    WriteValue8(0x80D2B157, arg2)
   end
 end
 
@@ -556,14 +600,14 @@ function doReadManagement()
 
     readCommandFile:close()
     messageSend(string.format('Read file: %s', readCommandFileName), 0xD2691E)
-  else
-    if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
-      loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
-    end
-    --insert a blank line of length read
-    rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endReadFrame-startReadFrame,string.sub(rawFile, endLinePos, -1))
-    if isInMainFile then lineNumber = lineNumber - 2 end
-  end 
+    return
+  end
+  if startReadFrame ~= recordedStartFrame then  --update loadDoc if previous inputs changed
+    loadDoc = string.format('%s%7.0f%s',string.sub(loadDoc, 1, loadFileNameEndPos+10), startReadFrame-recordedStartFrame+endReadFrame, string.sub(loadDoc, loadFileNameEndPos+18, -1))
+  end
+  --insert a blank line of length read
+  rawFile = string.format('%s%4.0f\n%s',string.sub(rawFile, 1, endLinePos),endReadFrame-startReadFrame,string.sub(rawFile, endLinePos, -1))
+  if isInMainFile then lineNumber = lineNumber - 2 end
 end
 
 function openLoadDoc()
@@ -581,34 +625,35 @@ function openLoadDoc()
   end
   if io.open(docFileName, "r") == nil then
     messageSend(string.format('LoadDoc not found! %s', docFileName), 0xFF0000)
-  else  --if docFile exists
-    docFile = io.open(docFileName, "r")
-    docFile:seek('set', 8)
-    if arg3 ~= 'SkipOffset,' then
-      offset = docFile:read("*number")
-      index = GetFrameCount() - offset
-      loadDoc = string.sub(tostring(docFile:read("*all")), 2)
-    else  --if SkipOffset is called, adjust the input lines based on the current offset
-      local loadDocOffset = docFile:read("*number")
-      local newLoadDocText = string.sub(tostring(docFile:read("*all")), 3) .. '/n'
-      local pos = 1
-      while true do
-        local _, _, lineName, startF, endF = string.find(newLoadDocText, '([%s%w%.%%%(%)-]+),%s*(%d+),%s*(%d+)', pos)
-        if lineName == nil then
-          break
-        end
-        if string.find(loadDoc, lineName) == nil then
-          if endF ~= 0 then
-            endF = endF+totalFramesAtIndex
-          end
-          loadDoc = loadDoc .. string.format('\n%s, %7.0f, %7.0f', lineName, startF+totalFramesAtIndex, endF)
-        end
-        pos = pos + #lineName + 19
-      end
-    end
-    docFile:close()
-    messageSend(string.format('LoadDoc opened successfully! %s', docFileName), 0x00FF00)
+    return
   end
+  --if docFile exists
+  docFile = io.open(docFileName, "r")
+  docFile:seek('set', 8)
+  if arg3 ~= 'SkipOffset,' then
+    offset = docFile:read("*number")
+    index = GetFrameCount() - offset
+    loadDoc = string.sub(tostring(docFile:read("*all")), 2)
+  else  --if SkipOffset is called, adjust the input lines based on the current offset
+    local loadDocOffset = docFile:read("*number")
+    local newLoadDocText = string.sub(tostring(docFile:read("*all")), 3) .. '/n'
+    local pos = 1
+    while true do
+      local _, _, lineName, startF, endF = string.find(newLoadDocText, '([%s%w%.%%%(%)-]+),%s*(%d+),%s*(%d+)', pos)
+      if lineName == nil then
+        break
+      end
+      if string.find(loadDoc, lineName) == nil then
+        if endF ~= 0 then
+          endF = endF+totalFramesAtIndex
+        end
+        loadDoc = loadDoc .. string.format('\n%s, %7.0f, %7.0f', lineName, startF+totalFramesAtIndex, endF)
+      end
+      pos = pos + #lineName + 19
+    end
+  end
+  docFile:close()
+  messageSend(string.format('LoadDoc opened successfully! %s', docFileName), 0x00FF00)
 end
 
 function fileIsUpdated()
