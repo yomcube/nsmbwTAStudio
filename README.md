@@ -117,30 +117,29 @@ Save LoadDoc, 5-4
   
   - There are a variety of different text strings that you can use instead of a memory address, so here's the list.
   - Strings prefixed with `.` should be placed after a different address (parent) to get good results (for example, `Player.PosX` or `0x8154B804.PosX`)
-    - If strings prefixed with `.` are used without the period and without a parent, then they will assume that `Player` is the parent string.
+    - Most strings prefixed with `.` can be used without a parent, in which case they will assume that `Player` is the parent string.
+    - Note: In multiplayer, the parent string `Player` only refers to the player who spawns first.
 
-  `IGT` = Value of (InGameTimer - 1)*4096  (32; maybe I'll automate the conversion someday)\
+  `IGT` = Value of (InGameTimer - 1)*4096  (maybe I'll automate the conversion someday) (32)\
   `RNG` = The game's RNG state (0x0 - 0xFFFFFFFF) (32)\
   `LifeCount` = Mario's life count (32)\
   `CoinCount` (32)\
   `Score` (32)\
   `SwitchTimer` = Remaining time on a P-Switch timer (32)\
-  `LevelDeaths` = Deaths per level (for easily activating super guide blocks; suffix with level name in format `.1-2`, `.5-Tower`; 8)\
-  `ProjectileCountA` = Number of recent fire/ice balls (set bot A and B; 8)\
-  `ProjectileCountB` (8)
+  `LevelDeaths` = Deaths per level (for easily activating super guide blocks; suffix with level name in format `.1-2`, `.5-Tower`) (8)\
   
   `Player` = The player's object address\
   `.PosX` (Float)\
   `.PosY` (Float)\
   `.Collision` = Collision flags (32)\
-  `.StarTimer` = Remaining time with star power (Player Only; 32)\
-  `.TwirlTimer` = Cooldown between spin inputs (Player Only; 32)\
-  `.SlideTimer` = 30 minus frames on ground since starting penguin slide (Player Only; 32)\
-  `.SpinTimer` = Remaining time getting upward speed from propeller spin (Player Only; 32)\
-  `.Jump` = Chained Jump Counter (Player Only; 32)\
-  `.ChainJumpTimer` = Remaining time to jump while activating the next chained jump state (Player Only; 32)\
-  `.Powerup` or `.PS` = Player Powerup State (0-6 unless you want to have fun; 32)\
-  `.PipeTimerL` and `.PipeTimerR` = Frames since landing on ground and holding L/R (Player Only; 32)
+  `.StarTimer` = Remaining time with star power (Player Only) (32)\
+  `.TwirlTimer` = Cooldown between spin inputs (Player Only) (32)\
+  `.SlideTimer` = 30 minus frames on ground since starting penguin slide (Player Only) (32)\
+  `.SpinTimer` = Remaining time getting upward speed from propeller spin (Player Only) (32)\
+  `.Jump` = Chained Jump Counter (Player Only) (32)\
+  `.ChainJumpTimer` = Remaining time to jump while activating the next chained jump state (Player Only) (32)\
+  `.Powerup` or `.PS` = Player Powerup State (0-6 unless you want to have fun) (32)\
+  `.PipeTimerL` and `.PipeTimerR` = Frames since landing on ground and holding L/R (Player Only) (32)
   
   `Inventory` = The game's inventory refference address\
   `.Mushrooms` (32)\
