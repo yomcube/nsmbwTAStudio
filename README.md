@@ -114,7 +114,13 @@ Save LoadDoc, 5-4
 
 <details>
   <summary>Additional info for using Write commands</summary>
-  
+
+  - Available Value Types:\
+  `8`\
+  `16`\
+  `32`\
+  `Float`\
+  `String`
   - There are a variety of different text strings that you can use instead of a memory address, so here's the list.
   - Strings prefixed with `.` should be placed after a different address (parent) to get good results (for example, `Player.PosX` or `0x8154B804.PosX`)
     - Most strings prefixed with `.` can be used without a parent, in which case they will assume that `Player` is the parent string.
