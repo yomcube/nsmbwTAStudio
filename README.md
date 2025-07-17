@@ -47,7 +47,8 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
 
 ## Using TAS Studio!
 
-`NSMBW Studio.exe` is in the `Studio` folder. Open it; you can either use the blank file that it creates or open an existing file.
+In your dolphin folder, open `Studio`->`NSMBW Studio.exe`. You can either create a new file or open an existing one.
+- Note: If studio auto-generates a file called `MarioWii.tas`, then you will have to save it to a file on your computer in order for the script to be able to read it.
 
 Open Dolphin and start New Super Mario Bros Wii. Select `Tools -> Execute Script`. From this window, you can launch any script in your `Sys\Scripts` folder. Launch `Data.lua` to see a bunch of useful information about the game.
 
