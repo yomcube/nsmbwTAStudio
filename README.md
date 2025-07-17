@@ -3,7 +3,7 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
 
 ## Setup
 1. Download [Dolphin Lua Core v4.6](https://github.com/MikeXander/Dolphin-Lua-Core/releases/tag/v4.6), and put it into a folder of your liking
-2. Download this repository and paste its contents into your Dolphin directory (the same folder as `Dolphin.exe`).
+2. Download this repository (go to `Code`->`Download ZIP`) and paste its contents into your Dolphin directory (the same folder as `Dolphin.exe`).
 3. Open Dolphin and set these settings:
 - Config
   - General
