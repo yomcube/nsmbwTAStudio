@@ -1,0 +1,1 @@
+If you use LoadDoc files with Studio, they will be stored here. This is not required, but can be useful for drafting fullgame TAS stuff.

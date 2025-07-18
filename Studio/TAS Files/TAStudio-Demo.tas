@@ -1,0 +1,415 @@
+#Start after the banner load
+#of 1-1 with Small Mario
+
+#Idle for level fadein
+  31
+
+#Run to the right for 80f
+  80,R
+
+#Crouch jump
+   1,R,D
+  21,R,J
+  22,R
+
+#Let go of jump for a frame
+#during a jump to set up
+#a precise y-position
+   5,R,J
+   1,R
+   4,R,J
+  18,R
+
+#To ground pound, press
+#down for 5f
+   5,D
+  14
+   1,U
+  50
+
+#You can also hold L/R on
+#the first frame of D
+  25,L,J
+   1,L,D,J
+   4,D,J
+  14
+#and slowly move L/R during
+#the ground pound
+   3,R
+  30
+
+#To do a spin input, use X.
+#Spin inputs take 4f to be
+#recognized by the game
+  30,R
+   3,R,X
+  69,R
+
+  16,R,J
+  10,R
+   3,R,X
+  30,R
+
+#These commands let you
+#repeat inputs! (usually only
+#3 or 4 reslides is optimal)
+
+Repeat, 6
+   1,R,D
+   1,L
+   1,R
+   1,R,U
+EndRepeat
+
+   1,R,D
+   1,L
+   3,R,D
+  35,J
+   8
+   5,D
+  14
+   1,U
+   5,D
+  14
+  16,R
+   1,D
+
+#Now that we've entered the
+#pipe, we don't know how long
+#the load will be. So this
+#command will pause inputs
+#until the load ends.
+
+Insert Load, 1-1 Pipe1
+
+#Pressing jump usually makes
+#it impossible to spin for
+#the next 9f, so I hold it
+#during the forced idle time
+  91,J
+   1,J,X
+  13,L,J
+   1,L
+
+#Walljumps will either
+#Force you to stay idle for
+#one frame
+#  If Y Speed < 0
+#or let you leave immediately
+#  If Y Speed >= 0
+   1,L,J
+
+#After a walljump, you will
+#be capped until one of these
+#conditions are true:
+# -Y Speed < 0.75
+# -Not in state Jump (usually
+#  done by using fire/ice)
+  20,R
+
+#To hold L/R without run,
+#use N.
+  70,R,N
+  53,R
+
+#It's always faster to
+#crouch into upward pipes if
+#possible.
+
+#If optmizing IGT, enter as
+#soon as possible. Otherwise,
+#enter near the center.
+   1,R,D
+  11,R,J
+   1,U
+Insert Load, 1-1 Pipe2
+
+ 116
+#You should generally walk
+#for 4f before jumping, for
+#best acceleration. After
+#that, it doesn't matter.
+   4,L
+   1,L,J
+  34,L
+
+#Pressing jump at any time
+#while midair will make you
+#have lower gravity.
+#Your max falling speed is
+#unchanged, though
+  22,L,J
+   8,L
+  11,R
+   2,R,J
+
+#To grab items or throw
+#fire/ice, use G.
+  50,R,G
+   4,R,J,G
+  34,R,G
+
+#I don't wanna put G in every
+#line so do this instead
+Hold, G
+   2,R,J
+  24,R
+  11,R
+   5,R,X
+  10,R,J
+  16,R
+
+#You can still jump for 2f
+#after falling off of ledges.
+#Usually when Data.lua shows
+#-2.34 Y Speed is the last
+#frame you can press Jump.
+  57,R,J
+   5,R,J,X
+
+#I'm done with the shell
+#now so let go of G
+Hold
+  46,R,J
+  50,R
+   1,R,J
+  24,R
+   1,R,J
+  21,R
+
+#Each powerup transition
+#takes 30 frames
+  30
+
+#Running down steep slopes is
+#faster than sliding, but
+#you can still do backward
+#slides for faster accel
+  39,R
+   1,R,J
+
+#If you have more than your
+#max speed (3), then you can
+#let go of R/L while midair
+#to keep it
+  35,J
+
+#There's a 30f cooldown
+#between spin inputs
+   3,J,X
+  27,J
+   3,J,X
+   3,J
+  15
+
+#Normally, landing on the
+#ground will set you back to
+#3 speed. But Skidding is a
+#way to keep some extra speed
+#while on ground.
+  10,L
+
+  26,J
+
+#By letting go of jump for
+#2-5 frames starting when
+#Data.lua shows ~2.2 Y Speed,
+#you can start falling 1f
+#later.
+
+#This sacrifices a bit of
+#height initially, but 
+#will let you jump further.
+   2
+  44,J
+   3,X
+   7
+   6,J
+  18
+
+#Tilt controls are useless
+#in this level, but here's
+#how you would change it.
+Tilt, 492
+  28,J
+   3,J,X
+
+#And bring the tilt
+#back to centered
+Tilt, 512
+  37,J
+
+Repeat, 3
+   1,R,D
+   1,L
+   1,R
+   1,R,U
+EndRepeat
+
+   1,R,D
+   1,L
+  23,R
+
+#Now let's really try
+#to be as fast as possible.
+
+#Once you're on flat ground,
+#you can continue sliding
+#for a bit to slow back down
+#to 3 speed over time.
+  10,R,D
+  26,J
+   5
+   2,L
+
+#You normally can't ground
+#pound if you're less than 1
+#block above ground. But by
+#being less than half way on
+#it, you can ground pound.
+   5,D
+  14
+   3,R
+   3,R,J
+   5,R
+   1,R,J
+  17,R
+
+#You always have to be facing
+#a wall in order to walljump
+#off of it
+   1,L
+   1,L,J
+   2,R,J
+   8,R
+  30
+
+#This is a super precise
+#trick, but it shows how
+#spins work with extra speed.
+  22
+   1,L
+   1,R,D
+  24,D
+   1,L
+   1,R
+
+#Spins can also be used to
+#keep excess speed, but you
+#will lose it over time.
+#It's best to not hold L/R
+#when spinning, for the
+#slowest decelleration.
+   3,R,X
+   1,L,J
+   1,J
+
+#If you land on an enemy, you
+#keep whatever speed you have
+#at that point. Here, I also
+#press right for 2f to slow
+#down by a precise amount...
+   2,R,J
+  26,J
+   3,J,X
+  11,J
+  28
+
+#...so that I don't get
+#pushed down by the block 
+#here, and can still land on
+#the goomba
+   4
+
+#You can even land and start
+#a new spin while keeping
+#excess speed
+   4,X
+  32,J
+   2
+   8,J
+   3,J,X
+  29,J
+
+#Upward slopes also slow you
+#down over time
+   3,R
+   1,R,D
+  23,R,D,J
+  18,R,D
+  14,R,D,J
+
+#When you cancel a crouch
+#midair, your jump stage
+#gets set to 1. We use that
+#here to set up a triple jump
+#off of the rolling hill
+  45,R
+   6,R,J
+  28,R
+  30,R,J
+   2,R
+  19,R,J
+   1,R
+
+#Rolling hill speed can't be
+#preserved like other speed,
+#unfortunately
+   1,R,J
+  28,R
+
+   1,R,D
+   1,L
+   4,R
+   1,R,U
+   1,R,D
+   1,L
+   1,R
+   1,R,U
+   1,R,D
+   1,L
+  40,R
+   3,R,X
+   1,L,J
+  27,J
+   5
+   6,J
+   3,J,X
+  39,J
+
+#Extremely niche but sliding
+#up the rolling hill lets you
+#keep excess speed on the
+#flat part of the hill
+   1,D
+  15,R,D
+   1,R,U
+
+Repeat, 3
+   1,R,D
+   1,L
+   1,R
+   1,R,U
+EndRepeat
+
+   1,R,D
+   1,L
+   3,R
+   1,R,U
+   6,R
+
+#Steeper slopes give
+#you more speed :)
+   3,R,X
+   1,R,J
+  31
+
+#So yeah, that's kinda the
+#idea. 
+
+#For additional info on all
+#the available inputs and
+#commands, check out the
+#ReadMe file on the NSMBW
+#TAS GitHub, which is linked
+# under the Help menu.
