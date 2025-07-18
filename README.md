@@ -1,7 +1,11 @@
 # NSMBW TAS Studio
-A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https://github.com/EverestAPI/CelesteTAS-EverestInterop/tree/a968bc96f958d67ddce3de84175f0e2b0bad1572). Source code for `NSMBW Studio.exe` will be included in a release every time it it updated; it is mostly unchanged from Celeste TAStudio. The main repository is just for the TAS Studio setup.
+A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https://github.com/EverestAPI/CelesteTAS-EverestInterop/tree/a968bc96f958d67ddce3de84175f0e2b0bad1572). Source code for `NSMBW Studio.exe` is included in each release, but it is mostly unchanged from Celeste TAStudio and is not needed for TASing. The main repository is for the TAS Studio setup itself.
 
 ## Setup
+Option 1: All-in-one package
+- Download the latest All-in-one package from this [direct download](https://cdn.discordapp.com/attachments/1177707752299180172/1395838781432791125/Dolphin-nsmwTAS-FullSetup.zip?ex=687be7aa&is=687a962a&hm=36b7ee3fad743521e3c10e84ef6b941208f02f2f6c25d7958bf9ef29470fb6ef&) or through the latest Release. Once you've done that, you can skip down to the `Hotkeys` section of step 3 in the setup. The recommended hotkeys are already set and the main category TAS files are included with the All-in-one package.
+
+Option 2: Manual setup
 1. Download [Dolphin Lua Core v4.6](https://github.com/MikeXander/Dolphin-Lua-Core/releases/tag/v4.6), and put it into a folder of your liking
 2. Download this repository (go to `Code`->`Download ZIP`) and paste its contents into your Dolphin directory (the same folder as `Dolphin.exe`).
 3. Open Dolphin and set these settings:
@@ -22,7 +26,7 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
   - MGR's recommened hotkeys are saved as a profile called `TAS Studio`. If you decide to use your own, make sure you have hotkeys for Save/Load States, Frame Advance, and Toggle Pause.
     - Note: If you use your own hotkeys, Studio may accept them as input, meaning they could change the TAS file or use up undos. These keys are not accepted as input by Studio by default:  `[ ] =`
     - <details>
-        <summary>MGR's hotkeys (QWERTY Keyboards)</summary>
+        <summary>Recommended hotkeys (QWERTY Keyboards)</summary>
       
         `[` = Frame Advance\
         `]` = Play/Pause\
