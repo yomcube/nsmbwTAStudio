@@ -3,7 +3,7 @@ A new way to TAS New Super Mario Bros Wii, based off of [Celeste TAStudio](https
 
 ## Setup
 Option 1: All-in-one package
-- Download the latest All-in-one package from this [direct download](https://cdn.discordapp.com/attachments/1177707752299180172/1395857337239076945/Dolphin-nsmbwTAS-FullSetup.zip?ex=687bf8f2&is=687aa772&hm=2db81d07c056ac7e008893947db67e16db71e46cf41c690013a12e8bc81bb8e1&) or through the latest Release. Once you've done that, you can skip down to the `Hotkeys` section of step 3 in the setup. The recommended hotkeys are already set and the main category TAS files are included with the All-in-one package.
+- Download the latest All-in-one package from this [direct download](https://cdn.discordapp.com/attachments/1177707752299180172/1395858143149293719/Dolphin-nsmbwTAS-FullSetup.zip?ex=687bf9b3&is=687aa833&hm=4b8a5fd08db000edbc8f8d5cc30f671ca9248d96de0df68c7d8ceb6141354c5d&) or through the latest Release. Once you've done that, you can skip down to the `Hotkeys` section of step 3 in the setup. The recommended hotkeys are already set and the main category TAS files are included with the All-in-one package.
 
 Option 2: Manual setup
 1. Download [Dolphin Lua Core v4.6](https://github.com/MikeXander/Dolphin-Lua-Core/releases/tag/v4.6), and put it into a folder of your liking
